@@ -26,7 +26,7 @@ class CRM_Correctaddressee_Upgrader extends CRM_Correctaddressee_Upgrader_Base {
   }
 
   public static function correct($startId, $endId) {
-    $contact = CRM_Core_DAO::executeQuery("SELECT id, contact_type FROM `civicrm_contact` WHERE `addressee_display` LIKE 'T.a.v.%' AND `id` BETWEEN %1 AND %2", array(1=>array($startId, 'Integer'), 2=>array($endId,'Integer')));
+    $contact = CRM_Core_DAO::executeQuery("SELECT id, contact_type FROM `civicrm_contact` WHERE `contact_type` = 'Individual' AND `addressee_display` LIKE 'T.a.v.%' AND `id` BETWEEN %1 AND %2", array(1=>array($startId, 'Integer'), 2=>array($endId,'Integer')));
     while ($contact->fetch()) {
       CRM_Contact_BAO_Contact_Utils::updateGreeting(array(
         'id' => $contact->id,
