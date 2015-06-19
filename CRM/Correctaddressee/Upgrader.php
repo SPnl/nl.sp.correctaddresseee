@@ -11,7 +11,7 @@ class CRM_Correctaddressee_Upgrader extends CRM_Correctaddressee_Upgrader_Base {
 
   const BATCH_SIZE = 250;
 
-  public function upgrade_1002() {
+  public function upgrade_1003() {
     $maxId = CRM_Core_DAO::singleValueQuery('SELECT max(id) FROM civicrm_contact');
     for ($startId = 0; $startId <= $maxId; $startId += self::BATCH_SIZE) {
       $endId = $startId + self::BATCH_SIZE - 1;
@@ -26,7 +26,7 @@ class CRM_Correctaddressee_Upgrader extends CRM_Correctaddressee_Upgrader_Base {
   }
 
   public static function correct($startId, $endId) {
-    $contact = CRM_Core_DAO::executeQuery("SELECT id FROM `civicrm_contact` WHERE `contact_type` = 'Individual' AND `addressee_display` LIKE 'T.a.v.%' AND `id` BETWEEN %1 AND %2", array(1=>array($startId, 'Integer'), 2=>array($endId,'Integer')));
+    $contact = CRM_Core_DAO::executeQuery("SELECT id FROM `civicrm_contact` WHERE `contact_type` = 'Individual' AND `id` BETWEEN %1 AND %2", array(1=>array($startId, 'Integer'), 2=>array($endId,'Integer')));
     while ($contact->fetch()) {
       self::resetAddressee($contact->id);
     }
@@ -40,7 +40,7 @@ class CRM_Correctaddressee_Upgrader extends CRM_Correctaddressee_Upgrader_Base {
     );
 
     $allGreetings = CRM_Core_PseudoConstant::greeting($filter);
-    $originalGreetingString = $greetingString = CRM_Utils_Array::value(1, $allGreetings);
+    $originalGreetingString = $greetingString = CRM_Utils_Array::value(6, $allGreetings);
     if (!$greetingString) {
       CRM_Core_Error::fatal(ts('Incorrect greeting value id %1, or no default greeting for this contact type and greeting type.', array(1 => 1)));
     }
@@ -62,7 +62,7 @@ class CRM_Correctaddressee_Upgrader extends CRM_Correctaddressee_Upgrader_Base {
     CRM_Utils_Token::replaceGreetingTokens($greetingString, $greetingDetails[$contact_id], $contact_id, 'CRM_UpdateGreeting');
 
 
-    $sql = "UPDATE `civicrm_contact` SET `addressee_custom` = null, `addressee_id` = 1, `addressee_display` = %1 where id = %2";
+    $sql = "UPDATE `civicrm_contact` SET `addressee_custom` = null, `addressee_id` = 6, `addressee_display` = %1 where id = %2";
     $sqlParams[1] = array($greetingString, 'String');
     $sqlParams[2] = array($contact_id, 'Integer');
 
